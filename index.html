@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEVENTEEN 韓国語学習ゲーム - ハン検5級</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300;400;500;700&family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💎</text></svg>">
+</head>
+<body>
+    <!-- ローディング画面 -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-content">
+            <div class="diamond-spinner"></div>
+            <h2>SEVENTEEN 韓国語学習ゲーム</h2>
+            <p>로딩 중...</p>
+        </div>
+    </div>
+
+    <!-- メインコンテナ -->
+    <div id="app" class="app-container">
+        <!-- タイトル画面 -->
+        <div id="title-screen" class="screen active">
+            <div class="title-content">
+                <div class="diamond-decoration top-left"></div>
+                <div class="diamond-decoration top-right"></div>
+                <div class="diamond-decoration bottom-left"></div>
+                <div class="diamond-decoration bottom-right"></div>
+                
+                <h1 class="main-title">
+                    <span class="title-korean">세븐틴</span>
+                    <span class="title-japanese">SEVENTEEN</span>
+                </h1>
+                <h2 class="subtitle">韓国語学習ゲーム</h2>
+                <p class="level-indicator">ハン検5級レベル</p>
+                
+                <div class="title-decoration">
+                    <span class="diamond">💎</span>
+                    <span class="diamond">💎</span>
+                    <span class="diamond">💎</span>
+                </div>
+                
+                <button id="start-btn" class="btn-primary">
+                    <span class="btn-text">게임 시작</span>
+                    <span class="btn-text-jp">ゲーム開始</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 推しメンバー選択画面 -->
+        <div id="member-select-screen" class="screen">
+            <div class="screen-header">
+                <h2>推しメンバーを選択してください</h2>
+                <p class="korean-text">좋아하는 멤버를 선택해주세요</p>
+            </div>
+            
+            <div class="member-grid">
+                <div class="member-card" data-member="suncheol">
+                    <div class="member-avatar">
+                        <span class="member-emoji">🐰</span>
+                    </div>
+                    <h3 class="member-name">スンチョル</h3>
+                    <p class="member-name-kr">순철</p>
+                    <div class="member-description">
+                        <p>リーダーシップ溢れる</p>
+                        <p>韓国語の達人</p>
+                    </div>
+                </div>
+                
+                <div class="member-card" data-member="sunyeong">
+                    <div class="member-avatar">
+                        <span class="member-emoji">🐯</span>
+                    </div>
+                    <h3 class="member-name">スニョン</h3>
+                    <p class="member-name-kr">순영</p>
+                    <div class="member-description">
+                        <p>明るく楽しい</p>
+                        <p>会話の天才</p>
+                    </div>
+                </div>
+                
+                <div class="member-card" data-member="jihun">
+                    <div class="member-avatar">
+                        <span class="member-emoji">🐹</span>
+                    </div>
+                    <h3 class="member-name">ジフン</h3>
+                    <p class="member-name-kr">지훈</p>
+                    <div class="member-description">
+                        <p>優しく丁寧</p>
+                        <p>文法の先生</p>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="back-to-title" class="btn-secondary">← タイトルに戻る</button>
+        </div>
+
+        <!-- メニュー選択画面 -->
+        <div id="menu-screen" class="screen">
+            <div class="screen-header">
+                <h2>学習メニュー</h2>
+                <p class="korean-text">학습 메뉴</p>
+                <div class="selected-member-display">
+                    <span id="selected-member-name"></span>と一緒に学習しましょう！
+                </div>
+            </div>
+            
+                         <div class="menu-grid">
+                 <div class="menu-card" data-menu="vocabulary">
+                     <div class="menu-icon">📚</div>
+                     <h3>単語学習</h3>
+                     <p class="korean-text">단어 학습</p>
+                     <p class="menu-description">
+                         ハン検5級レベルの重要単語を<br>
+                         楽しく覚えましょう！
+                     </p>
+                 </div>
+                 
+                 <div class="menu-card" data-menu="completion">
+                     <div class="menu-icon">✏️</div>
+                     <h3>例文学習</h3>
+                     <p class="korean-text">문장 학습</p>
+                     <p class="menu-description">
+                         日常会話で使える韓国語の例文を<br>
+                         練習しましょう！
+                     </p>
+                 </div>
+             </div>
+            
+            <div class="menu-buttons">
+                <button id="back-to-members" class="btn-secondary">← メンバー選択に戻る</button>
+            </div>
+        </div>
+
+        <!-- 単語学習画面 -->
+        <div id="vocabulary-screen" class="screen">
+            <div class="game-header">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="vocab-progress"></div>
+                </div>
+                <div class="score-display">
+                    <span>正解: <span id="vocab-correct">0</span></span>
+                    <span>問題: <span id="vocab-current">1</span>/<span id="vocab-total">10</span></span>
+                </div>
+            </div>
+            
+            <div class="game-content">
+                <div class="question-card">
+                    <h3 id="vocab-question">単語を選んでください</h3>
+                    <div class="word-display">
+                        <span id="vocab-word" class="korean-word"></span>
+                    </div>
+                    <p class="word-hint" id="vocab-hint"></p>
+                </div>
+                
+                <div class="answer-options" id="vocab-options">
+                    <!-- 選択肢はJavaScriptで動的に生成 -->
+                </div>
+            </div>
+            
+            <div class="game-buttons">
+                <button id="back-to-menu" class="btn-secondary">← メニューに戻る</button>
+            </div>
+        </div>
+
+        <!-- 例文ゲーム画面 -->
+        <div id="sentences-screen" class="screen">
+            <div class="game-header">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="sent-progress"></div>
+                </div>
+                <div class="score-display">
+                    <span>正解: <span id="sent-correct">0</span></span>
+                    <span>問題: <span id="sent-current">1</span>/<span id="sent-total">10</span></span>
+                </div>
+            </div>
+            
+            <div class="game-content">
+                <div class="question-card">
+                    <h3 id="sent-question">正しい韓国語を選んでください</h3>
+                    <div class="sentence-display">
+                        <p id="sent-japanese" class="japanese-sentence"></p>
+                    </div>
+                </div>
+                
+                <div class="answer-options" id="sent-options">
+                    <!-- 選択肢はJavaScriptで動的に生成 -->
+                </div>
+            </div>
+            
+            <div class="game-buttons">
+                <button id="back-to-menu-sent" class="btn-secondary">← メニューに戻る</button>
+            </div>
+        </div>
+
+         <!-- 例文穴埋めゲーム画面 -->
+         <div id="completion-screen" class="screen">
+             <div class="game-header">
+                 <div class="progress-bar">
+                     <div class="progress-fill" id="completion-progress"></div>
+                 </div>
+                 <div class="score-display">
+                     <span>正解: <span id="completion-correct">0</span></span>
+                     <span>問題: <span id="completion-current">1</span>/<span id="completion-total">10</span></span>
+                 </div>
+             </div>
+             
+             <div class="game-content">
+                 <div class="question-card">
+                     <h3 id="completion-question">空欄に適切な単語を入れてください</h3>
+                     <div class="sentence-display">
+                         <p id="completion-sentence" class="korean-sentence"></p>
+                         <p id="completion-japanese" class="japanese-sentence"></p>
+                         <p class="word-hint" id="completion-hint"></p>
+                     </div>
+                 </div>
+                 
+                 <div class="answer-options" id="completion-options">
+                     <!-- 選択肢はJavaScriptで動的に生成 -->
+                 </div>
+             </div>
+             
+             <div class="game-buttons">
+                 <button id="back-to-menu-completion" class="btn-secondary">← メニューに戻る</button>
+             </div>
+         </div>
+
+        <!-- 結果画面 -->
+        <div id="result-screen" class="screen">
+            <div class="result-content">
+                <h2>学習完了！</h2>
+                <p class="korean-text">학습 완료!</p>
+                
+                <div class="result-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">正解率</span>
+                        <span class="stat-value" id="result-percentage">0%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">正解数</span>
+                        <span class="stat-value" id="result-correct">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">総問題数</span>
+                        <span class="stat-value" id="result-total">0</span>
+                    </div>
+                </div>
+                
+                <div class="result-message" id="result-message">
+                    <!-- 結果メッセージはJavaScriptで動的に生成 -->
+                </div>
+                
+                <div class="result-buttons">
+                    <button id="retry-btn" class="btn-primary">もう一度挑戦</button>
+                    <button id="back-to-menu-result" class="btn-secondary">メニューに戻る</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- フッター -->
+    <footer class="footer">
+        <p>&copy; 2024 SEVENTEEN 韓国語学習ゲーム - ハン検5級レベル</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/vocabulary.js"></script>
+    <script src="js/messages.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
