@@ -101,6 +101,22 @@ class KoreanLearningGame {
             this.showScreen('menu');
         });
 
+        // ミニゲーム関連のイベント
+        document.getElementById('back-to-menu-minigame')?.addEventListener('click', () => {
+            this.showScreen('menu');
+        });
+
+        document.getElementById('restart-minigame')?.addEventListener('click', () => {
+            this.restartMinigame();
+        });
+
+        // じゃんけん選択ボタン
+        document.querySelectorAll('.rps-choice').forEach(choice => {
+            choice.addEventListener('click', (e) => {
+                this.playRockPaperScissors(e.currentTarget.dataset.choice);
+            });
+        });
+
         // タッチデバイス対応
         this.setupTouchEvents();
     }
@@ -189,6 +205,9 @@ class KoreanLearningGame {
             case 'vocabulary':
             case 'completion':
                 this.initializeGame();
+                break;
+            case 'minigame':
+                this.initializeMinigame();
                 break;
             case 'result':
                 this.displayResults();
@@ -538,6 +557,390 @@ class KoreanLearningGame {
             [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
         }
         return shuffled;
+    }
+
+    /**
+     * ミニゲーム初期化
+     */
+    initializeMinigame() {
+        this.minigameStats = {
+            wins: 0,
+            losses: 0,
+            draws: 0,
+            round: 1,
+            gameCompleted: false,
+            roundHistory: [] // 各ラウンドの結果を記録
+        };
+        
+        this.updateMinigameDisplay();
+        this.resetMinigameUI();
+        
+        // メンバーメッセージ表示
+        this.showMemberMessage('minigame_start');
+    }
+
+    /**
+     * ミニゲーム表示更新
+     */
+    updateMinigameDisplay() {
+        const winsElement = document.getElementById('minigame-wins');
+        const lossesElement = document.getElementById('minigame-losses');
+        const drawsElement = document.getElementById('minigame-draws');
+        const roundElement = document.getElementById('minigame-round');
+
+        if (winsElement) winsElement.textContent = this.minigameStats.wins;
+        if (lossesElement) lossesElement.textContent = this.minigameStats.losses;
+        if (drawsElement) drawsElement.textContent = this.minigameStats.draws;
+        if (roundElement) roundElement.textContent = this.minigameStats.round;
+    }
+
+    /**
+     * ミニゲームUIリセット
+     */
+    resetMinigameUI() {
+        const resultElement = document.getElementById('rps-result');
+        const messageElement = document.getElementById('rps-message');
+        
+        if (resultElement) {
+            resultElement.classList.remove('show');
+        }
+        
+        if (messageElement) {
+            messageElement.textContent = '뭘 낼까요? (何を出しますか？)';
+        }
+    }
+
+    /**
+     * じゃんけんゲーム実行
+     */
+    playRockPaperScissors(playerChoice) {
+        // ゲームが完了している場合は何もしない
+        if (this.minigameStats.gameCompleted) {
+            return;
+        }
+
+        const choices = ['가위', '바위', '보'];
+        const computerChoice = choices[Math.floor(Math.random() * 3)];
+        
+        // 結果判定
+        const result = this.determineWinner(playerChoice, computerChoice);
+        
+        // ラウンド結果を記録
+        this.minigameStats.roundHistory.push({
+            round: this.minigameStats.round,
+            playerChoice: playerChoice,
+            computerChoice: computerChoice,
+            result: result
+        });
+        
+        // 統計更新
+        this.updateMinigameStats(result);
+        
+        // 結果表示
+        this.displayRPSResult(playerChoice, computerChoice, result);
+        
+        // ラウンド進行
+        this.minigameStats.round++;
+        this.updateMinigameDisplay();
+        
+        // 3ラウンド終了時の処理
+        if (this.minigameStats.round > 3) {
+            this.endMinigame();
+        }
+    }
+
+    /**
+     * 勝敗判定
+     */
+    determineWinner(player, computer) {
+        if (player === computer) return 'draw';
+        
+        const winConditions = {
+            '가위': '보',    // ハサミは紙に勝つ
+            '바위': '가위',  // 石はハサミに勝つ
+            '보': '바위'     // 紙は石に勝つ
+        };
+        
+        return winConditions[player] === computer ? 'win' : 'lose';
+    }
+
+    /**
+     * ミニゲーム統計更新
+     */
+    updateMinigameStats(result) {
+        switch(result) {
+            case 'win':
+                this.minigameStats.wins++;
+                break;
+            case 'lose':
+                this.minigameStats.losses++;
+                break;
+            case 'draw':
+                this.minigameStats.draws++;
+                break;
+        }
+    }
+
+    /**
+     * じゃんけん結果表示
+     */
+    displayRPSResult(playerChoice, computerChoice, result) {
+        const playerChoiceElement = document.getElementById('player-choice');
+        const computerChoiceElement = document.getElementById('computer-choice');
+        const outcomeElement = document.getElementById('rps-outcome');
+        const resultElement = document.getElementById('rps-result');
+        const messageElement = document.getElementById('rps-message');
+
+        // 選択表示
+        if (playerChoiceElement) {
+            playerChoiceElement.textContent = this.getChoiceEmoji(playerChoice);
+        }
+        if (computerChoiceElement) {
+            computerChoiceElement.textContent = this.getChoiceEmoji(computerChoice);
+        }
+
+        // 結果メッセージ
+        let outcomeText = '';
+        let messageText = '';
+        
+        switch(result) {
+            case 'win':
+                outcomeText = '이겼어요! (勝ちました！)';
+                messageText = '축하해요! 잘했어요! (おめでとう！よくできました！)';
+                if (outcomeElement) {
+                    outcomeElement.textContent = outcomeText;
+                    outcomeElement.className = 'rps-outcome win';
+                }
+                break;
+            case 'lose':
+                outcomeText = '아쉬워요... (残念...)';
+                messageText = '다음에 더 잘할 수 있을 거예요! (次はもっと上手にできるはずです！)';
+                if (outcomeElement) {
+                    outcomeElement.textContent = outcomeText;
+                    outcomeElement.className = 'rps-outcome lose';
+                }
+                break;
+            case 'draw':
+                outcomeText = '비겼어요! (引き分け！)';
+                messageText = '다시 한 번 해볼까요? (もう一度やってみましょうか？)';
+                if (outcomeElement) {
+                    outcomeElement.textContent = outcomeText;
+                    outcomeElement.className = 'rps-outcome draw';
+                }
+                break;
+        }
+
+        if (messageElement) {
+            messageElement.textContent = messageText;
+        }
+
+        // 結果表示
+        if (resultElement) {
+            resultElement.classList.add('show');
+        }
+
+        // メンバーメッセージ表示（3ラウンド終了前のみ）
+        if (!this.minigameStats.gameCompleted) {
+            this.showMemberMessage(result === 'win' ? 'minigame_win' : 'minigame_lose');
+        }
+    }
+
+    /**
+     * 選択肢の絵文字取得
+     */
+    getChoiceEmoji(choice) {
+        const emojis = {
+            '가위': '✂️',
+            '바위': '🪨',
+            '보': '📄'
+        };
+        return emojis[choice] || '❓';
+    }
+
+    /**
+     * ミニゲーム終了
+     */
+    endMinigame() {
+        // 既に完了している場合は何もしない
+        if (this.minigameStats.gameCompleted) {
+            return;
+        }
+        
+        this.minigameStats.gameCompleted = true;
+        
+        const messageElement = document.getElementById('rps-message');
+        const resultElement = document.getElementById('rps-result');
+        
+        if (messageElement && resultElement) {
+            // 最終結果に基づいてメッセージを表示
+            const finalMessage = this.getFinalResultMessage();
+            messageElement.textContent = finalMessage;
+            
+            // 少し遅延を入れて結果表示を順番に実行
+            setTimeout(() => {
+                // 結果履歴を表示
+                this.displayRoundHistory();
+                
+                // さらに遅延を入れて最終結果を表示
+                setTimeout(() => {
+                    // 最終結果を表示
+                    this.displayFinalResult();
+                }, 200);
+            }, 200);
+        }
+        
+        // 最終結果に基づいてメンバーメッセージを表示（少し遅延）
+        setTimeout(() => {
+            this.showFinalResultMessage();
+        }, 600);
+    }
+
+    /**
+     * 最終結果メッセージ取得
+     */
+    getFinalResultMessage() {
+        const wins = this.minigameStats.wins;
+        const losses = this.minigameStats.losses;
+        
+        if (wins === 3 && losses === 0) {
+            return '완벽해요! 3전 3승! (完璧です！3戦3勝！)';
+        } else if (wins === 2 && losses === 1) {
+            return '잘했어요! 2승 1패! (よくできました！2勝1敗！)';
+        } else if (wins === 1 && losses === 2) {
+            return '아쉬워요, 다음엔 더 잘할 거예요! 1승 2패 (惜しい、次はもっと上手くやれます！1勝2敗)';
+        } else {
+            return '괜찮아요, 다시 도전해봐요! 0승 3패 (大丈夫、もう一度チャレンジしてみましょう！0勝3敗)';
+        }
+    }
+
+    /**
+     * ラウンド履歴表示
+     */
+    displayRoundHistory() {
+        const resultElement = document.getElementById('rps-result');
+        if (!resultElement) return;
+        
+        // 既存の履歴要素がある場合は削除
+        const existingHistory = resultElement.querySelector('.round-history');
+        if (existingHistory) {
+            existingHistory.remove();
+        }
+        
+        // 履歴表示エリアを作成
+        let historyHTML = '<div class="round-history">';
+        historyHTML += '<h4>라운드 결과 (ラウンド結果)</h4>';
+        
+        this.minigameStats.roundHistory.forEach((round, index) => {
+            const resultText = round.result === 'win' ? '승리' : 
+                              round.result === 'lose' ? '패배' : '무승부';
+            const resultClass = round.result === 'win' ? 'win' : 
+                               round.result === 'lose' ? 'lose' : 'draw';
+            
+            historyHTML += `
+                <div class="round-item ${resultClass}">
+                    <span class="round-number">${round.round}전</span>
+                    <span class="round-choices">
+                        ${this.getChoiceEmoji(round.playerChoice)} vs ${this.getChoiceEmoji(round.computerChoice)}
+                    </span>
+                    <span class="round-result">${resultText}</span>
+                </div>
+            `;
+        });
+        
+        historyHTML += '</div>';
+        
+        // 既存の結果表示の後に履歴を追加
+        const existingBattle = resultElement.querySelector('.rps-battle');
+        if (existingBattle) {
+            existingBattle.insertAdjacentHTML('afterend', historyHTML);
+        }
+    }
+
+    /**
+     * 最終結果表示
+     */
+    displayFinalResult() {
+        const resultElement = document.getElementById('rps-result');
+        if (!resultElement) return;
+        
+        // 既存の最終結果要素がある場合は削除
+        const existingFinalResult = resultElement.querySelector('.final-result');
+        if (existingFinalResult) {
+            existingFinalResult.remove();
+        }
+        
+        const wins = this.minigameStats.wins;
+        const losses = this.minigameStats.losses;
+        const draws = this.minigameStats.draws;
+        
+        const finalResultHTML = `
+            <div class="final-result">
+                <h4>최종 결과 (最終結果)</h4>
+                <div class="final-stats">
+                    <span class="final-stat">승리: ${wins}승</span>
+                    <span class="final-stat">패배: ${losses}패</span>
+                    <span class="final-stat">무승부: ${draws}무</span>
+                </div>
+            </div>
+        `;
+        
+        // 履歴の後に最終結果を追加
+        const historyElement = resultElement.querySelector('.round-history');
+        if (historyElement) {
+            historyElement.insertAdjacentHTML('afterend', finalResultHTML);
+        }
+    }
+
+    /**
+     * 最終結果に基づくメンバーメッセージ表示
+     */
+    showFinalResultMessage() {
+        const wins = this.minigameStats.wins;
+        const losses = this.minigameStats.losses;
+        
+        let messageType = 'minigame_final_0_3'; // デフォルト
+        
+        if (wins === 3 && losses === 0) {
+            messageType = 'minigame_final_3_0';
+        } else if (wins === 2 && losses === 1) {
+            messageType = 'minigame_final_2_1';
+        } else if (wins === 1 && losses === 2) {
+            messageType = 'minigame_final_1_2';
+        }
+        
+        this.showMemberMessage(messageType);
+    }
+
+    /**
+     * ミニゲーム再開
+     */
+    restartMinigame() {
+        this.minigameStats = {
+            wins: 0,
+            losses: 0,
+            draws: 0,
+            round: 1,
+            gameCompleted: false,
+            roundHistory: []
+        };
+        
+        this.updateMinigameDisplay();
+        this.resetMinigameUI();
+        
+        // 結果表示エリアをクリア
+        const resultElement = document.getElementById('rps-result');
+        if (resultElement) {
+            // 履歴と最終結果を削除
+            const historyElement = resultElement.querySelector('.round-history');
+            const finalResultElement = resultElement.querySelector('.final-result');
+            if (historyElement) historyElement.remove();
+            if (finalResultElement) finalResultElement.remove();
+            
+            resultElement.classList.remove('show');
+        }
+        
+        // メンバーメッセージ表示
+        this.showMemberMessage('minigame_start');
     }
 
     /**

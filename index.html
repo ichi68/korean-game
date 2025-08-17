@@ -134,6 +134,16 @@
                          練習しましょう！
                      </p>
                  </div>
+                 
+                 <div class="menu-card" data-menu="minigame">
+                     <div class="menu-icon">🎮</div>
+                     <h3>ミニゲーム</h3>
+                     <p class="korean-text">미니게임</p>
+                     <p class="menu-description">
+                         韓国語じゃんけんで<br>
+                         楽しく遊びましょう！
+                     </p>
+                 </div>
              </div>
             
             <div class="menu-buttons">
@@ -231,6 +241,71 @@
              
              <div class="game-buttons">
                  <button id="back-to-menu-completion" class="btn-secondary">← メニューに戻る</button>
+             </div>
+         </div>
+
+         <!-- じゃんけんミニゲーム画面 -->
+         <div id="minigame-screen" class="screen">
+             <div class="game-header">
+                 <div class="score-display">
+                     <span>勝ち: <span id="minigame-wins">0</span></span>
+                     <span>負け: <span id="minigame-losses">0</span></span>
+                     <span>引き分け: <span id="minigame-draws">0</span></span>
+                     <span>ラウンド: <span id="minigame-round">1</span>/3</span>
+                 </div>
+             </div>
+             
+             <div class="game-content">
+                 <div class="minigame-title">
+                     <h2>가위바위보 게임을 시작해요!</h2>
+                     <p>じゃんけんゲームを始めよう！</p>
+                 </div>
+                 
+                 <div class="rps-game-area">
+                     <div class="rps-status">
+                         <div class="rps-message" id="rps-message">
+                             뭘 낼까요? (何を出しますか？)
+                         </div>
+                     </div>
+                     
+                     <div class="rps-choices">
+                         <button class="rps-choice" data-choice="가위">
+                             <div class="rps-icon">✂️</div>
+                             <div class="rps-text">가위</div>
+                             <div class="rps-text-jp">ハサミ</div>
+                         </button>
+                         <button class="rps-choice" data-choice="바위">
+                             <div class="rps-icon">🪨</div>
+                             <div class="rps-text">바위</div>
+                             <div class="rps-text-jp">石</div>
+                         </button>
+                         <button class="rps-choice" data-choice="보">
+                             <div class="rps-icon">📄</div>
+                             <div class="rps-text">보</div>
+                             <div class="rps-text-jp">紙</div>
+                         </button>
+                     </div>
+                     
+                     <div class="rps-result" id="rps-result">
+                         <div class="rps-battle">
+                             <div class="rps-player">
+                                 <div class="rps-label">あなた</div>
+                                 <div class="rps-choice-display" id="player-choice"></div>
+                             </div>
+                             <div class="rps-vs">VS</div>
+                             <div class="rps-computer">
+                                 <div class="rps-label">コンピュータ</div>
+                                 <div class="rps-choice-display" id="computer-choice"></div>
+                             </div>
+                         </div>
+                         <div class="rps-outcome" id="rps-outcome"></div>
+                     </div>
+                 </div>
+             </div>
+             
+             <div class="game-buttons">
+                 <button id="back-to-menu-minigame" class="btn-secondary">← メニューに戻る</button>
+                 <button id="restart-minigame" class="btn-primary">もう一度プレイ</button>
              </div>
          </div>
 
